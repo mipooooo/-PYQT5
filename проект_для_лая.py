@@ -4,7 +4,8 @@ import csv
 
 from PyQt5 import uic
 from csv import *
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QLabel
 
 
 class Podrobnee(QMainWindow): # окно подробнее, в котором рассказывается о темпераментах
@@ -179,7 +180,7 @@ class Eend(QMainWindow): # конечное окно
             and self.sp != "тест не пройден"
             and self.k == 0
         ):
-            if sum(self.sp) != 11:
+            if sum(self.sp) != 12:
                 self.label_2.setText(
                     """
         Вы не прошли наш тест полнотстью,
@@ -288,6 +289,28 @@ class Eend(QMainWindow): # конечное окно
         self.statis = Statics(self.name_temp, self.k)
         self.statis.show()
 
+class Qst12(QMainWindow):
+    def __init__(self, sp):
+        super().__init__()
+        uic.loadUi("ui7.ui", self)
+        self.k = 0
+        self.sp = sp
+        self.pixmap = QPixmap('temp.jpg')
+        self.label.setPixmap(self.pixmap)
+        self.pushButton.clicked.connect(self.end1)
+
+    def end1(self):
+        if self.radioButton.isChecked():
+            self.sp[0] += 1
+        elif self.radioButton_2.isChecked():
+            self.sp[2] += 1
+        elif self.radioButton_3.isChecked():
+            self.sp[3] += 1
+        elif self.radioButton_4.isChecked():
+            self.sp[1] += 1
+        self.close()
+        self.kon = Eend(self.sp, self.k)
+        self.kon.show()
 
 class Qst11(QMainWindow):  # последний (одиннадцатый) вопрос
     def __init__(self, sp):
@@ -303,7 +326,7 @@ class Qst11(QMainWindow):  # последний (одиннадцатый) во�
         self.radioButton_2.setText("у вас всегда бодрое настроение")
         self.radioButton_3.setText("любите аккуратность")
         self.radioButton_4.setText("робки, малоактивны")
-        if self.radioButton.isChecked():  # последняя проверка ответа пользователя
+        if self.radioButton.isChecked(): 
             self.sp[0] += 1
         elif self.radioButton_2.isChecked():
             self.sp[1] += 1
@@ -311,8 +334,30 @@ class Qst11(QMainWindow):  # последний (одиннадцатый) во�
             self.sp[2] += 1
         elif self.radioButton_4.isChecked():
             self.sp[3] += 1
-        self.pushButton.deleteLater()
         self.pushButton_2.clicked.connect(self.end1)
+        self.pushButton.clicked.connect(self.cont2)
+
+    def cont2(self):
+        if (
+            self.radioButton.isChecked()
+            == self.radioButton_2.isChecked()
+            == self.radioButton_3.isChecked()
+            == self.radioButton_4.isChecked()
+            == False
+        ):
+            self.label_2.setText("Ответьте на вопрос или завершите тест.")
+        else:
+            if self.radioButton.isChecked():
+                self.sp[0] += 1
+            elif self.radioButton_2.isChecked():
+                self.sp[1] += 1
+            elif self.radioButton_3.isChecked():
+                self.sp[2] += 1
+            elif self.radioButton_4.isChecked():
+                self.sp[3] += 1
+            self.close()
+            self.qst = Qst12(self.sp)
+            self.qst.show()
 
     def end1(self):
         if self.radioButton.isChecked():
